@@ -9,27 +9,29 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Data
 public class OrderManager {
-
-    private Map<Location , List<Store>> locationWiseStores;
+    private final Map<String, Store> storeIdToStore = new HashMap<>();
     private final LocationDetectionService locationDetectionService;
 
     public OrderManager(LocationDetectionService locationDetectionService) {
         this.locationDetectionService = locationDetectionService;
     }
 
-
-    public List<Store> getLocationWiseStores(Location location) {
-        return locationDetectionService.getNearestStores(location , locationWiseStores);
+    public void registerStore(Store store) {
+        storeIdToStore.put(String.valueOf(store.getStoreId()), store);
+        locationDetectionService.addStoreToGeoIndex(store);
     }
 
-    private List<Store> getNearestLocationStores(Location location) {
-        return locationWiseStores.get(location);
+    public List<Store> getLocationWiseStores(Location location, double radiusKm) {
+        List<String> nearbyStoreIds = locationDetectionService.getNearestStoreIds(location, radiusKm);
+        return nearbyStoreIds.stream()
+                .map(storeIdToStore::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
-
-
-
 }

@@ -1,7 +1,9 @@
 package com.example.car_rental_system;
 
+import com.example.car_rental_system.config.RedisConfig;
 import com.example.car_rental_system.model.*;
 import com.example.car_rental_system.service.LocationDetectionService;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -14,7 +16,8 @@ public class Application {
     public static void main(String[] args) {
         // 1. Create Locations (lat, long)
         Location newYorkLocation = new Location(40.7128, -74.0060);     // New York
-        Location laLocation = new Location(34.0522, -118.2437);         // Los Angeles
+        Location laLocation = new Location(34.0522, -118.2437);
+        Location delhiLocation = new Location( 28.6315, 77.2167);
 
         // 2. Create Vehicles
         Vehicle sedan = new Vehicle();
@@ -40,24 +43,37 @@ public class Application {
         laStore.setStoreName("LA Central Store");
         laStore.setLocation(laLocation);
 
+        Store delhiStore = new Store(List.of(suv,sedan));
+        delhiStore.setStoreId(3);
+        delhiStore.setStoreName("Delhi Central Store");
+        delhiStore.setLocation(delhiLocation);
+
         // 4. Map stores by Location
-        Map<Location, List<Store>> locationWiseStores = new HashMap<>();
-        locationWiseStores.put(newYorkLocation, List.of(nyStore));
-        locationWiseStores.put(laLocation, List.of(laStore));
+//        Map<Location, List<Store>> locationWiseStores = new HashMap<>();
+//        locationWiseStores.put(newYorkLocation, List.of(nyStore));
+//        locationWiseStores.put(laLocation, List.of(laStore));
+
 
         // 5. Initialize OrderManager
-        LocationDetectionService locationDetectionService = new LocationDetectionService();
+        LocationDetectionService locationDetectionService = new LocationDetectionService(RedisConfig.createRedisTemplate());
         OrderManager orderManager = new OrderManager(locationDetectionService);
-        orderManager.setLocationWiseStores(locationWiseStores);
+        orderManager.registerStore(laStore);
+        orderManager.registerStore(nyStore);
+        orderManager.registerStore(delhiStore);
 
         // 6. Usage example
-        List<Store> storesInNY = orderManager.getLocationWiseStores(newYorkLocation);
-        System.out.println("Stores near New York:");
-        for (Store store : storesInNY) {
+        List<Store> storesNearBy = orderManager.getLocationWiseStores(new Location(28.529, 77.2295 ), 30);
+        System.out.println("Stores near by:");
+        for (Store store : storesNearBy) {
             System.out.println(" - " + store.getStoreName());
         }
 
-        Store store = storesInNY.getFirst();
+        if(CollectionUtils.isEmpty(storesNearBy)){
+            System.out.println("No near by  Found");
+            return ;
+        }
+
+        Store store = storesNearBy.getFirst();
         List<Vehicle> vehicles = store.getVehiclesBasedOnType(VehicleType.CAR);
 
         ExecutorService executorService = Executors.newFixedThreadPool(5);
