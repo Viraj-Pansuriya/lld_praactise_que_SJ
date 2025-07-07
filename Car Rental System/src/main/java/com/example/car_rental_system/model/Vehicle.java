@@ -2,6 +2,7 @@ package com.example.car_rental_system.model;
 
 import com.sun.source.tree.Tree;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -14,6 +15,8 @@ public class Vehicle {
     private VehicleType vehicleType;
     private Long hourlyRate;
     private Long dailyRate;
+
+    @ToString.Exclude
     private TreeSet<ReservationTime> upcomingReservationSlots = new TreeSet<>(Comparator.comparing(a -> a.startTime));
 
     private synchronized boolean isAbleToBook(LocalDateTime startTime , LocalDateTime endTime){

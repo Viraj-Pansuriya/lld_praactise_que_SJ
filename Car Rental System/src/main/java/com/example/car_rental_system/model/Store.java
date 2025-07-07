@@ -1,11 +1,10 @@
 package com.example.car_rental_system.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -13,17 +12,33 @@ public class Store {
     private int storeId;
     private String storeName;
     private Location location;
+    @ToString.Exclude
     private VehicleInventoryManager vehicleInventoryManager;
+    @ToString.Exclude
     private List<Reservation> reservations;
 
     public Store(List<Vehicle> vehicles){
         Map<VehicleType , List<Vehicle>> vehicleListMap =
                 vehicles.stream().collect(Collectors.groupingBy(Vehicle::getVehicleType));
         vehicleInventoryManager = new VehicleInventoryManager(vehicleListMap);
+        reservations = new ArrayList<>();
     }
 
-    public boolean bookVehicle(LocalDateTime startTime , LocalDateTime endTime , Vehicle vehicle){
-        return vehicleInventoryManager.bookVehicle(startTime , endTime , vehicle);
+    public Reservation bookVehicle(LocalDateTime startTime , LocalDateTime endTime , Vehicle vehicle){
+        boolean result = vehicleInventoryManager.bookVehicle(startTime , endTime , vehicle);
+
+        if(result){
+            Reservation reservation = new Reservation();
+            reservation.setReservationId(UUID.randomUUID().toString());
+            reservation.setReservationStatus(ReservationStatus.SCHEDULED);
+            reservation.setVehicle(vehicle);
+            reservation.setStore(this);
+            reservation.setStartingTime(startTime);
+            reservation.setEndingTime(endTime);
+            reservations.add(reservation);
+            return reservation;
+        }
+        return null;
     }
 
     public List<Vehicle> getVehiclesBasedOnType(VehicleType vehicleType){

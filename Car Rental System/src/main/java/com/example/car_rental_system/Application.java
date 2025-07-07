@@ -83,7 +83,7 @@ public class Application {
             int finalIndex = index;
             executorService.submit(()->
             {
-                boolean resp = store.bookVehicle(
+                Reservation resp = store.bookVehicle(
                         LocalDateTime.of(2025, 7, 7, 12, 0, 0),
                         LocalDateTime.of(2025, 7, 8, 12, 0, 0),
                         vehicles.getFirst());
