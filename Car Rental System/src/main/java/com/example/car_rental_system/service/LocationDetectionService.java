@@ -28,13 +28,17 @@ public class LocationDetectionService {
     }
 
     public List<String> getNearestStoreIds(Location location, double radiusKm) {
+        RedisGeoCommands.GeoRadiusCommandArgs args = RedisGeoCommands
+                .GeoRadiusCommandArgs.newGeoRadiusArgs().includeCoordinates()
+                .includeDistance().sortAscending().limit(10);
+
         GeoOperations<String, String> geoOps = redisTemplate.opsForGeo();
         Circle searchArea = new Circle(
                 new Point(location.getLongitude(), location.getLatitude()),
                 new Distance(radiusKm, Metrics.KILOMETERS)
         );
 
-        GeoResults<RedisGeoCommands.GeoLocation<String>> results = geoOps.radius(GEO_STORE_KEY, searchArea);
+        GeoResults<RedisGeoCommands.GeoLocation<String>> results = geoOps.radius(GEO_STORE_KEY, searchArea  , args);
         if (results == null) return Collections.emptyList();
 
         return results.getContent().stream()
