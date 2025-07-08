@@ -1,0 +1,5 @@
+can be added player wise rating
+timer based scoring
+can undo each move
+can have a different bet on each game.
+find a player algorithm.
