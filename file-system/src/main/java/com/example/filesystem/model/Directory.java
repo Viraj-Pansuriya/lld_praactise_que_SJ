@@ -57,7 +57,7 @@ public class Directory implements FileSystem{
 
         if(isFile){
             System.out.println("Executing a LS command");
-            generateFilePath(components);
+            fileSystem.ls(components , level + 1);
             return;
         }
         if(level == (components.length - 1)){
@@ -68,15 +68,6 @@ public class Directory implements FileSystem{
             return ;
         }
         fileSystem.ls(components , level + 1);
-    }
-
-    private void generateFilePath(String[] components) {
-        StringBuilder sb = new StringBuilder();
-        for(String cmp : components){
-            sb.append("/");
-            sb.append(cmp);
-        }
-        System.out.println(sb.toString());
     }
 
     public void mkdir(String[] components, int level) {

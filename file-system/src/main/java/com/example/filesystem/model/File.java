@@ -23,6 +23,14 @@ public class File implements FileSystem{
 
     @Override
     public void ls(String[] components, int level) {
-
+        generateFilePath(components);
+    }
+    private void generateFilePath(String[] components) {
+        StringBuilder sb = new StringBuilder();
+        for(String cmp : components){
+            sb.append("/");
+            sb.append(cmp);
+        }
+        System.out.println(sb);
     }
 }
