@@ -12,15 +12,15 @@ public class Game {
     private final Dice dice;
     private int currentTurn;
 
-    public Game(int boardSize , int playerSize , int diceSize) {
+    public Game(int width , int height , int playerSize , int diceSize) {
         this.currentTurn = 0;
         this.dice = new Dice(diceSize);
-        this.board = new Board(boardSize);
+        this.board = new Board(width, height);
         this.players = new ArrayList<>();
         for(int index = 0 ; index < playerSize ; index++) {
             players.add(new Player(index , 0));
         }
-        board.getCells().getFirst().getPlayers().addAll(players);
+        board.getCells()[0][0].getPlayers().addAll(players);
     }
 
     public void startGame(){
@@ -40,7 +40,7 @@ public class Game {
     }
 
     private boolean isGameOver(int lastPosition) {
-        return lastPosition == board.getCells().size() - 1;
+        return lastPosition == (board.getTotalNumberOfCells() - 1);
     }
 
     private void incrementCounter() {
@@ -51,8 +51,7 @@ public class Game {
     private int findLastPosition() {
         int currentRoll = dice.roll();
         int currentPosition = players.get(currentTurn).getCurrentPosition();
-        if(currentPosition + currentRoll >= board.getCells().size()) return currentPosition;
+        if(currentPosition + currentRoll >= board.getTotalNumberOfCells()) return currentPosition;
         return board.getLastPosition(currentPosition + currentRoll);
     }
-
 }

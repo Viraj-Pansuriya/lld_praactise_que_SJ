@@ -6,14 +6,16 @@ import java.util.*;
 
 @Data
 public class Board {
-    private final List<Cell> cells;
-    private final Map<Integer, Integer> jumps; // for lookup only;
+    private final Cell[][] cells;
+    private final Map<Integer, Integer> jumps;
 
-    public Board(int size) {
+    public Board(int width, int height) {
         this.jumps = new HashMap<>();
-        cells = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            cells.add(new Cell(i));
+        cells = new Cell[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                cells[x][y] = new Cell(x+y);
+            }
         }
     }
 
@@ -31,7 +33,7 @@ public class Board {
     }
 
     public void moveCurrentPlayerAndKillIfAny(int lastPosition , Player player) {
-        Cell cell = this.cells.get(lastPosition);
+        Cell cell = this.cells[getRowNumberBasedOnPosition(lastPosition)][getColumnNumberBasedOnPosition(lastPosition)];
         if(!CollectionUtils.isEmpty(cell.getPlayers())){
             cell.getPlayers().forEach(
                     ply-> player.setCurrentPosition(0)
@@ -40,5 +42,17 @@ public class Board {
         }
         player.setCurrentPosition(lastPosition);
         cell.getPlayers().add(player);
+    }
+
+    public int getRowNumberBasedOnPosition(int position){
+        return (position / cells[0].length);
+    }
+
+    public int getColumnNumberBasedOnPosition(int position){
+        return (position % cells[0].length);
+    }
+
+    public int getTotalNumberOfCells() {
+        return cells.length * cells[0].length;
     }
 }
