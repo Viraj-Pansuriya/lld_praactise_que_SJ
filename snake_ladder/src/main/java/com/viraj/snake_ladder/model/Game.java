@@ -1,0 +1,60 @@
+package com.viraj.snake_ladder.model;
+
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+public class Game {
+    private final Board board;
+    private final List<Player> players;
+    private final Dice dice;
+    private int currentTurn;
+
+    public Game(int width , int height , int playerSize , int diceSize) {
+        this.currentTurn = 0;
+        this.dice = new Dice(diceSize);
+        this.board = new Board(width, height);
+        this.players = new ArrayList<>();
+        for(int index = 0 ; index < playerSize ; index++) {
+            players.add(new Player(index , 0));
+        }
+        board.getCells()[0][0].getPlayers().addAll(players);
+    }
+
+    public void startGame(){
+        long startTime = System.currentTimeMillis();
+        while(true){
+            System.out.println("Player " + currentTurn + " is playing.");
+            int lastPosition = findLastPosition();
+            if(isGameOver(lastPosition)) break;
+            board.moveCurrentPlayerAndKillIfAny(lastPosition , players.get(currentTurn));
+            incrementCounter();
+        }
+        long endTime = System.currentTimeMillis();
+
+        // logging system steps:
+        System.out.println("Winner of Game is : " +  players.get(currentTurn).getId());
+        System.out.println("Time taken in millis : " + (endTime - startTime));
+
+    }
+
+    private boolean isGameOver(int lastPosition) {
+        return lastPosition == (board.getTotalNumberOfCells() - 1);
+    }
+
+    private void incrementCounter() {
+        currentTurn++;
+        currentTurn %= players.size();
+    }
+
+    private int findLastPosition() {
+        int currentRoll = dice.roll();
+        int currentPosition = players.get(currentTurn).getCurrentPosition();
+        if(currentPosition + currentRoll >= board.getTotalNumberOfCells()) return currentPosition;
+        int lastPosition= board.getLastPosition(currentPosition + currentRoll);
+        System.out.println("Jumped from " + currentPosition  + " to " + lastPosition);
+        return lastPosition;
+    }
+}
