@@ -34,11 +34,11 @@ public class Board {
         Cell cell = this.cells.get(lastPosition);
         if(!CollectionUtils.isEmpty(cell.getPlayers())){
             cell.getPlayers().forEach(
-                    ply-> player.setCurrentCell(this.cells.getFirst())
+                    ply-> player.setCurrentPosition(0)
             );
             cell.getPlayers().clear();
         }
-        player.setCurrentCell(cell);
+        player.setCurrentPosition(lastPosition);
         cell.getPlayers().add(player);
     }
 }

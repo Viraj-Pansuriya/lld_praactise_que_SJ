@@ -18,7 +18,7 @@ public class Game {
         this.board = new Board(boardSize);
         this.players = new ArrayList<>();
         for(int index = 0 ; index < playerSize ; index++) {
-            players.add(new Player(index , board.getCells().getFirst()));
+            players.add(new Player(index , 0));
         }
         board.getCells().getFirst().getPlayers().addAll(players);
     }
@@ -50,7 +50,7 @@ public class Game {
 
     private int findLastPosition() {
         int currentRoll = dice.roll();
-        int currentPosition = players.get(currentTurn).getCurrentCell().getNumber();
+        int currentPosition = players.get(currentTurn).getCurrentPosition();
         if(currentPosition + currentRoll >= board.getCells().size()) return currentPosition;
         return board.getLastPosition(currentPosition + currentRoll);
     }
