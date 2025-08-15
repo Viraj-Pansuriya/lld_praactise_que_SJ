@@ -26,6 +26,7 @@ public class Game {
     public void startGame(){
         long startTime = System.currentTimeMillis();
         while(true){
+            System.out.println("Player " + currentTurn + " is playing.");
             int lastPosition = findLastPosition();
             if(isGameOver(lastPosition)) break;
             board.moveCurrentPlayerAndKillIfAny(lastPosition , players.get(currentTurn));
@@ -52,6 +53,8 @@ public class Game {
         int currentRoll = dice.roll();
         int currentPosition = players.get(currentTurn).getCurrentPosition();
         if(currentPosition + currentRoll >= board.getTotalNumberOfCells()) return currentPosition;
-        return board.getLastPosition(currentPosition + currentRoll);
+        int lastPosition= board.getLastPosition(currentPosition + currentRoll);
+        System.out.println("Jumped from " + currentPosition  + " to " + lastPosition);
+        return lastPosition;
     }
 }

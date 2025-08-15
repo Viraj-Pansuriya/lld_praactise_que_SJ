@@ -8,15 +8,25 @@ import java.util.*;
 public class Board {
     private final Cell[][] cells;
     private final Map<Integer, Integer> jumps;
+    // instead of this , we can also have a jump object for each cell.
 
     public Board(int width, int height) {
         this.jumps = new HashMap<>();
         cells = new Cell[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                cells[x][y] = new Cell(x+y);
+
+        for (int x = 0; x < height; x++) {
+            for (int y = 0; y < width; y++) {
+                cells[x][y] = new Cell(x * width + y);
             }
         }
+        initializeBoard();
+    }
+
+    public void initializeBoard(){
+        this.addJump(2 , 10);
+        this.addJump(3 , 10);
+        this.addJump(4 , 10);
+        this.addJump(20 , 6);
     }
 
     public void addJump(int startingCell, int endingCell) {
